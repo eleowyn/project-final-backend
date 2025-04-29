@@ -7,13 +7,13 @@ import ClinicInfo from './pages/ClinicInfo';
 import Login from './components/auth/Login';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
-import Navbar from './components/common/Navbar';
+// import Navbar from './components/common/Navbar';
 
 function App() {
   return (
     <Router>
       <AuthProvider>
-        <Navbar />
+        {/* <Navbar /> */}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/clinic-info" element={<ClinicInfo />} />
