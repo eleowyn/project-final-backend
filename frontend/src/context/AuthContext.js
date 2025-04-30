@@ -5,40 +5,39 @@ import { login as authLogin } from '../services/auth';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [auth, setAuth] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (token) {
-      localStorage.setItem('token', token);
-    } else {
-      localStorage.removeItem('token');
+    const storedAuth = localStorage.getItem('auth');
+    if (storedAuth) {
+      setAuth(JSON.parse(storedAuth));
     }
-  }, [token]);
+  }, []);
 
   const login = async (username, password) => {
     try {
-      const { token, role } = await authLogin(username, password);
-      setToken(token);
-      setUser({ username, role });
-      navigate(`/${role}/dashboard`);
+      const userData = await authLogin(username, password);
+      setAuth(userData);
+      localStorage.setItem('auth', JSON.stringify(userData));
+      navigate('/dashboard');
+      return userData;
     } catch (error) {
       throw error;
     }
   };
 
   const logout = () => {
-    setToken(null);
-    setUser(null);
+    setAuth(null);
+    localStorage.removeItem('auth');
     navigate('/login');
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ auth, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export default AuthContext;
+export const useAuth = () => React.useContext(AuthContext);

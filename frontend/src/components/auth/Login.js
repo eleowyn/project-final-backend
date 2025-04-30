@@ -1,29 +1,32 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AuthContext from '../../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
+import { login as authLogin } from '../../services/auth';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { login } = useContext(AuthContext);
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await login(username, password);
+      const userData = await authLogin(username, password);
+      login(userData);
+      navigate('/dashboard');
     } catch (err) {
       setError('Invalid credentials');
     }
   };
 
   return (
-    <div className="login-container">
+    <div className="auth-form">
       <h2>Login</h2>
-      {error && <p className="error">{error}</p>}
+      {error && <div className="alert alert-danger">{error}</div>}
       <form onSubmit={handleSubmit}>
-        <div>
+        <div className="form-group">
           <label>Username</label>
           <input
             type="text"
@@ -32,7 +35,7 @@ const Login = () => {
             required
           />
         </div>
-        <div>
+        <div className="form-group">
           <label>Password</label>
           <input
             type="password"
@@ -41,7 +44,7 @@ const Login = () => {
             required
           />
         </div>
-        <button type="submit">Login</button>
+        <button type="submit" className="btn btn-primary">Login</button>
       </form>
     </div>
   );
